@@ -1,0 +1,90 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Test for WiseHash.js</title>
+
+<!--load dependencies-->
+<script src="SJCL.js"></script>
+<script src="SCRYPT.js"></script>
+
+<!--this only loads two word arrays: wordlist and blacklist. Beware if dictionary.js does anything else-->
+<script src="dictionary_en.js"></script>
+
+<!--Main script-->
+<script src="wisehash.js"></script>
+
+<!--functions just for the test-->
+<script>
+
+var pwdEntropy;												//global variable that will be used to calculate additional delay
+
+function displayEntropy(){
+	var pwd = document.getElementById('keybox').value;
+	if(pwd.length != 0){
+		var entropy = WiseHashEntropy(pwd);
+		pwdEntropy = entropy;
+	}
+	document.getElementById('pwdmsg').innerHTML = 'Entropy: ' + Math.round(entropy*100)/100 + ' bits';
+}
+
+function displayHash(){	
+	var pwd = document.getElementById('keybox').value,
+		CPUfactor = document.getElementById('CPUfactor').value,
+		salt = document.getElementById('salt').value,
+		r = document.getElementById('r').value,
+		p = document.getElementById('p').value,
+		dkLen = document.getElementById('dkLen').value;
+		
+	if(pwd.trim()!=''){
+		
+		var delay = 15000/(pwdEntropy + 2);				//additional delay in milliseconds. Change formula to suit application
+		
+		document.getElementById('hashmsg').innerHTML = 'Computing... (This will be slow if your password is weak)';
+		document.getElementById('hashbox').value = '';
+		
+	window.setTimeout(function(){									//compute hash but only after additional delay
+		var timer = new Date().getTime();
+		var hash = WiseHashScrypt(pwd,salt,CPUfactor,r,p,dkLen);
+	
+		document.getElementById('hashmsg').innerHTML = 'Base64 hash computed in ' + (new Date().getTime() - timer) + ' ms. Additional delay ' + Math.round(delay) + ' ms';
+		document.getElementById('hashbox').value = hash    
+	}, delay);
+
+	}else{
+		document.getElementById('pwdmsg').innerHTML = 'Empty password'
+	}
+}
+
+function resetKey(){
+	document.getElementById('pwdmsg').innerHTML = 'The entropy will apear here';
+	document.getElementById('keybox').value = '';
+}
+
+function resetHash(){
+	document.getElementById('hashmsg').innerHTML = 'The hash will appear below';
+	document.getElementById('hashbox').value = '';
+}
+
+</script>
+</head>
+
+<body>
+<h2>Test of WiseHash variable-strength key derivation function</h2>
+<span id='pwdmsg'>The entropy will apear here</span><br><br>
+<input type="text" id="keybox" style="width:50%;" onkeyup="if(event.keyCode==13){displayHash()}else{displayEntropy()};" placeholder="Write the Password here."/>
+<button id="submit" onClick="displayHash();">Compute Hash</button>&nbsp;&nbsp;
+<button id="resetKey" onClick="resetKey();">Reset</button><br><br>
+<span id='hashmsg'>The hash will appear below</span><br><br>
+<input type="text" id="hashbox" style="width:60%;"/>
+<button id="resetHash" onClick="resetHash();">Reset</button><br><br>
+<p>WiseHash parameters:</p>
+<input type="text" id="CPUfactor" placeholder="Write the CPU factor here." value="1"/>&nbsp;&nbsp;CPUfactor (1, or a power of 2)<br>
+<p>Scrypt parameters:</p>
+<input type="text" id="salt" placeholder="Write the salt here." value=""/>&nbsp;&nbsp;Salt<br>
+<input type="text" id="r" placeholder="parameter r" value="8"/>&nbsp;&nbsp;r<br>
+<input type="text" id="p" placeholder="parameter p" value="1"/>&nbsp;&nbsp;p<br>
+<input type="text" id="dkLen" placeholder="length in words" value="32"/>&nbsp;&nbsp;length in words
+
+</body>
+</html>
