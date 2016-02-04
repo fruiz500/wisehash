@@ -10,19 +10,26 @@ Variable key stretching with fast dictionary-based entropy calculation
   
   o	Weak keys are stretched more than strong ones, and therefore made
 	more secure.
+	
   o	Using weak keys leads to a slower user experience, thus encouraging
 	users to change to strong keys.
+	
   o	Since weak keys are not entirely disallowed, they remain in the 
 	keyspace, causing would-be hackers to expend considerable resources
 	in scanning the keyspace, or else risk missing the weakest keys.
+	
   o	Key strength is determined not only from the kinds of characters
 	used, but also from dictionary matches.
+	
   o	A distinction is made between common words in the dictionary and
 	words that are commonly used in passwords. The latter lead to 
 	using more keystretching iterations.
+	
   o	Common substitutions (such as "$" for "s") are taken into account.
+  
   o	The key is scored based on the true value of its information
 	entropy, which can be obtained as an output.
+	
   o	This release includes English dictionaries, but changing to
 	a different language merely involves one file.
 		
@@ -110,7 +117,8 @@ Changing the dictionary
   dictionary file.
 
   The Spanish dictionary file dictionary_es.js was made using this process.
-License
+
+License
 
   Copyright (C) 2014 Francisco Ruiz
 
